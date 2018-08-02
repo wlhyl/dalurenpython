@@ -83,7 +83,6 @@ def GetLi(y, m, d, h, minu, sec):
     timeString = "{0}-{1:02d}-{2:02d} {3:02d}:{4:02d}:{5:02d}".format(
         y, m, d, h, minu, sec)
     占时Time = datetime.datetime.strptime(timeString, "%Y-%m-%d %H:%M:%S")
-
     中气月支=支(中气[6][1:2])
     for i in ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"]:
         if 中气月支.六合(支(i)):

@@ -1,7 +1,9 @@
 import regex
+import json
 from prettytable import PrettyTable
 from ganzhiwuxin import *
 from common import GetLi
+from shipan import guati
 
 
 class NoSanchuan(Exception):
@@ -34,7 +36,7 @@ def 干Of寄宫(d):
 class ShiPan():
 
     def __init__(self, year, month, day, hour, minutes,
-                 second, 月将, 占时, 昼占=True, 占测的事=""):
+                 second, 月将, 占时, 昼占=True, 占测的事="", 性别=0, 生年=2018):
         self.year = year
         self.month = month
         self.day = day
@@ -45,6 +47,8 @@ class ShiPan():
         self.zhanShi = 支(占时)
         self.昼占 = 昼占
         self.占测的事 = 占测的事
+        self.性别 = 性别
+        self.生年 = 生年
         self.四柱与节气 = GetLi(year, month, day, hour, minutes, second)
         self.占日 = self.四柱与节气[2]
         self.空亡 = self.__空亡
@@ -52,7 +56,30 @@ class ShiPan():
         self.sk = SiKe(self.tp, self.占日)
         self.sc = SanChuan(self.tp, self.sk)
         self.tianJiang = 天将盘(self.tp, self.sk, self.昼占)
+        self.本命, self.行年 = self.__年命()
         self.格局 = self.sc.格局
+        self.格局comment = []
+        guaTiModules = guati
+        guaTiFuns = []
+        for attr in (a for a in dir(guaTiModules) if a.startswith('do_')):
+            callback = getattr(guaTiModules, attr)
+            guaTiFuns.append(callback)
+        for fun in guaTiFuns:
+            fun(self)
+        with open('shipan/guaticomment.json', 'r') as f:
+            guaTiCommentJson = json.load(f)
+        if "虎视" in self.格局 or "冬蛇掩目" in self.格局:
+            self.格局.append("虎视卦")
+        if "见机" in self.格局 or "察微" in self.格局 or "复等" in self.格局:
+            self.格局.append("涉害卦")
+        for i in self.格局:
+            __g = ("<div>"
+                   "<font style=font-weight:bold;>{}：</font>"
+                   "<div>{}</div></div>")
+            __gc = guaTiCommentJson.get(i)
+            if __gc is None:
+                continue
+            self.格局comment.append(__g.format(i, __gc))
 
     @property
     def table(self):
@@ -191,16 +218,26 @@ class ShiPan():
                                                         self.zhanShi,
                                                         __昼占,
                                                         self.空亡[0], self.空亡[1])
+        __spHeader = "{} <div>性别：{} 本命：{} 行年：{}</div>".format(
+                    __spHeader, "男" if self.性别 == 0 else "女", self.本命, self.行年)
         __格局 = "<div>卦体: {}</div>".format(" ".join(self.格局))
-        __html = "<html>{}<body>{}{}{}</body></html>".format(__head,
+        __格局comment = ""
+        for i in self.格局comment:
+            __格局comment = "{}<div>{}</div>".format(__格局comment, i)
+        __html = "<html>{}<body>{}{}{}{}</body></html>".format(__head,
                                                              __spHeader,
-                                                             __spTable, __格局)
+                                                             __spTable,
+                                                             __格局,
+                                                             __格局comment)
 
         return __html
 
+    def setGuaTi(self, g):
+        self.格局.append(g)
+
     @property
     def 天盘(self):
-        return self.__tp
+        return self.tp
 
     @property
     def 四课(self):
@@ -208,7 +245,7 @@ class ShiPan():
 
     @property
     def 三传(self):
-        return self.__sc
+        return self.sc
 
     @property
     def __空亡(self):
@@ -222,6 +259,14 @@ class ShiPan():
         xunShou = zhi + (-1 * delta)
 
         return [xunShou + (-2), xunShou + (-1)]
+
+    def __年命(self):
+        本命 = GetLi(self.生年, 5, 20, 12, 0, 0)[0]
+        if self.性别 == 0:
+            行年 = 干支(干("丙"),支("寅")) + (self.year - self.生年)
+        else:
+            行年 = 干支(干("壬"),支("申")) + (self.生年 - self.year)
+        return 本命, 行年
 
 
 class TianPan():
@@ -457,7 +502,7 @@ class SanChuan():
                 __初 = __贼[0][0]
                 __中 = self.__天盘[__初]
                 __末 = self.__天盘[__中]
-                self.__type.append("重审")
+                self.__type.append("重审卦")
                 return (__初, __中, __末)
             else:
                 return self.__比用(__贼)
@@ -468,7 +513,7 @@ class SanChuan():
                 __初 = __克[0][0]
                 __中 = self.__天盘[__初]
                 __末 = self.__天盘[__中]
-                self.__type.append("元首")
+                self.__type.append("元首卦")
                 return (__初, __中, __末)
             else:
                 return self.__比用(__克)
@@ -485,7 +530,7 @@ class SanChuan():
             __初 = result[0][0]
             __中 = self.__天盘[__初]
             __末 = self.__天盘[__中]
-            self.__type.append("知一")
+            self.__type.append("知一卦")
             return (__初, __中, __末)
         elif len(result) == 0:
             return self.__涉害(ke)  # 俱不比
@@ -542,7 +587,7 @@ class SanChuan():
             __初 = __有最大涉害深度的支组[0][0]
             __中 = self.__天盘[__初]
             __末 = self.__天盘[__中]
-            self.__type.append("涉害")
+            self.__type.append("涉害卦")
             return (__初, __中, __末)
 
         # 涉害深度相同
@@ -551,7 +596,7 @@ class SanChuan():
 
             # 从孟发用
             if 临地盘 in [支("寅"), 支("巳"), 支("申"), 支("亥")]:
-                _初 = i[0]
+                __初 = i[0]
                 __中 = self.__天盘[__初]
                 __末 = self.__天盘[__中]
                 self.__type.append("见机")
@@ -616,9 +661,11 @@ class SanChuan():
             __初 = ko[0][0]
             __中 = self.__天盘[__初]
             __末 = self.__天盘[__中]
-            self.__type.append("遥克")
+            self.__type.append("遥克卦")
             return (__初, __中, __末)
         else:
+            if len(ko) > 1:
+                self.__type.append("遥克卦")
             return self.__比用(ko)
 
     def __昂星(self):
@@ -660,7 +707,7 @@ class SanChuan():
             chu = self.__四课.支 + 4
         zhong = self.__四课.干阳神
         mo = zhong
-        self.__type.append("别责")
+        self.__type.append("别责卦")
         return (chu, zhong, mo)
 
     def __八专(self):
@@ -668,11 +715,11 @@ class SanChuan():
             raise NoSanchuan('不是八传日')
         if self.__四课.干.属阳:
             chu = self.__四课.干阳神 + 2
-            self.__type.append("八专")
+            self.__type.append("八专卦")
             return (chu, self.__四课.干阳神, self.__四课.干阳神)
         else:
-            chu = self.__四课['支阴神'] + (-2)
-            self.__type.append("八专")
+            chu = self.__四课.支阴神 + (-2)
+            self.__type.append("八专卦")
             return (chu, self.__四课.干阳神, self.__四课.干阳神)
 
     def __伏呤(self):
@@ -787,15 +834,16 @@ class SanChuan():
         gan = self.__四课.干
         sc = [self.初, self.中, self.末]
         for i in sc:
-            if gan.克(i):
+            if gan.wuxing.克(i.wuxing):
                 luQing.append("财")
-            if i.克(gan):
+            elif i.wuxing.克(gan.wuxing):
                 luQing.append("官")
-            if gan.生(i):
+            elif gan.wuxing.生(i.wuxing):
                 luQing.append("子")
-            if i.生(gan):
+            elif i.wuxing.生(gan.wuxing):
                 luQing.append("父")
-            luQing.append("兄")
+            else:
+                luQing.append("兄")
         return luQing
 
     @property
@@ -857,7 +905,7 @@ class 天将盘():
              "壬": 支("巳"),
              "癸": 支("卯")}
 
-    def __init__(self, t, s, ye=False):
+    def __init__(self, t, s, 昼占=True):
         if not isinstance(t, TianPan):
             raise ValueError("{0} 不是天盘".format(t))
         if not isinstance(s, SiKe):
@@ -868,10 +916,11 @@ class 天将盘():
         self.__guiren = None  # 贵人所乘地支
         self.__mi = False  # 天将逆布
 
-        if ye:
-            self.__guiren = self.yeGui[str(self.__gan)]
-        else:
+        if 昼占:
             self.__guiren = self.zhouGui[str(self.__gan)]
+        else:
+            self.__guiren = self.yeGui[str(self.__gan)]
+
         guiRenDiPan = 支("子") + (self.__guiren - self.__天盘[支("子")])  # 贵人地盘之支
 
         si = 支("巳")
@@ -897,14 +946,15 @@ class 天将盘():
 
 class MinGPan(ShiPan):
     def __init__(self, year, month, day, hour, minutes,
-                 second, 月将, 占时, 昼占=True, 占测的事=""):
+                 second, 月将, 占时, 昼占=True, 占测的事="", 性别=0, 生年=2018):
         super().__init__(year, month, day, hour, minutes,
-                         second, 月将, 占时, 昼占, 占测的事)
+                         second, 月将, 占时, 昼占, 占测的事, 性别=0, 生年=2018)
         self.命宫 = self.四柱与节气[0].支
-        self.三限 = self.__三限()
+        self.三限 = self.__三限
         self.大运流年 = self.__大运流年()
 #         print(self.三限)
 
+    @property
     def __三限(self):
         __sx = []
         __sc = (self.sc.初, self.sc.中, self.sc.末)
@@ -991,11 +1041,12 @@ class MinGPan(ShiPan):
         x.add_row(liuNian)
         liuNianTable = x.get_html_string()
         liuNianTable = regex.sub(r'<tr>', '<tr valign="top">', liuNianTable)
-        html = regex.sub(r'</body></html>', liuNianTable, __html)
+        __三限html = "<div>三限：<div>初限：{0[0]}</div><div>中限：{0[1]}</div><div>末限：{0[2]}</div></div>".format(self.__三限)
+        html = regex.sub(r'</body></html>', __三限html + liuNianTable, __html)
         return "{}</body></html>".format(html)
 
 
 if __name__ == "__main__":
-    a = MinGPan(2018, 6, 4,22, 22, 7, "申", "未", True, "abc")
-#     a = ShiPan(2018, 6, 4,19, 22, 7, "申", "戌", True, "abc")
+#     a = MinGPan(2018, 6, 15,13, 22, 7, "申", "未", True, "abc")
+    a = ShiPan(2018, 6, 15,13, 22, 7, "申", "戌", True, "abc",0,2018)
     print(a.toHml)
