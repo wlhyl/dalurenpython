@@ -1,5 +1,5 @@
 from shipan import shipan
-
+from common import Get旺衰, 旺衰
 
 def do_伏呤(sp):
     sk = sp.四课
@@ -7,6 +7,47 @@ def do_伏呤(sp):
     __支阳 = sk.支阳神
     if __支 == __支阳:
         sp.setGuaTi("伏呤卦")
+
+
+def do_返呤(sp):
+    sk = sp.四课
+    __支 = sk.支
+    __支阳 = sk.支阳神
+    if (__支 + 6) == __支阳:
+        sp.setGuaTi("返呤卦")
+
+
+def do_龙德(sp):
+    __太岁 = sp.四柱与节气[0]
+    __月将 = sp.yueJiang
+    __三传 = sp.三传
+    sc = [__三传.初, __三传.中, __三传.末]
+    if sc[0] == __月将 and __太岁.支 in sc:
+        print(1)
+        sp.setGuaTi("龙德卦")
+
+
+def do_三光(sp):
+    pass
+
+
+def do_三阳(sp):
+    __发用 = sp.三传.初
+    __月建 = sp.四柱与节气[1].支
+    if Get旺衰(__月建, __发用.wuxing) not in [旺衰("旺"), 旺衰("相")]:
+        return
+    天将盘 = sp.tianJiang
+    if 天将盘.逆:
+        return
+    sk = sp.四课
+    __干 = sk.干
+    __支 = sk.支
+    __干天将 = 天将盘[shipan.寄宫(__干)]
+    __支天将 = 天将盘[__支]
+    t = [shipan.天将('蛇'), shipan.天将('雀'), shipan.天将('合'), shipan.天将('勾'),
+         shipan.天将('龙')]
+    if __干天将 in t and __支天将 in t:
+        sp.setGuaTi("三阳卦")
 
 
 def do_度厄(sp):
@@ -58,3 +99,6 @@ def do_罗网(sp):
 
     if 天罗 in zhiList or 地网 in zhiList:
         sp.setGuaTi("罗网卦")
+
+if __name__ == "__main__":
+    shipan.ShiPan(2018, 4, 3, 11, 11,11, "戌","酉",yes, "占测的事")

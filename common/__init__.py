@@ -1,6 +1,6 @@
-import sqlite3
 import os
 import datetime
+import eacal
 from ganzhiwuxin import *
 
 DB = os.path.dirname(os.path.realpath(__file__)) + '/data/lifa.db'
@@ -21,129 +21,47 @@ def GetShiChen(h):
 # 取得占日的历法数据
 # 返回 四柱 月将
 def GetLi(y, m, d, h, minu, sec):
-    conn = sqlite3.connect(DB)
-    c = conn.cursor()
-    queryString = 'select  id,jiqi,solaryear, solarmonth, solarday, solarhours, ganzhimonth,ganzhiyear,ganzhiday from litable where solaryear = {} and solarmonth = {} and ' \
-                  'jiqi in ("冬至","大寒","雨水","春分","谷雨","小满","夏至","大暑","处暑","秋分","霜降","小雪") '.format(y, m)
-
-    cursor = c.execute(queryString)
-    for row in cursor:
-        中气=row
-
-    queryString = 'select  id,jiqi,solaryear, solarmonth, solarday, solarhours, ganzhimonth,ganzhiyear,ganzhiday from litable where id={}'.format(中气[0]-1)
-    cursor = c.execute(queryString)
-    for row in cursor:
-        前一节=row
-
-    queryString = 'select  id,jiqi,solaryear, solarmonth, solarday, solarhours, ganzhimonth,ganzhiyear,ganzhiday from litable where id={}'.format(中气[0]-2)
-    cursor = c.execute(queryString)
-    for row in cursor:
-        前一气=row
-
-    queryString = 'select  id,jiqi,solaryear, solarmonth, solarday, solarhours, ganzhimonth,ganzhiyear,ganzhiday from litable where id={}'.format(中气[0] + 1)
-    cursor = c.execute(queryString)
-    for row in cursor:
-        後一节 = row
-
-    queryString = 'select  id,jiqi,solaryear, solarmonth, solarday, solarhours, ganzhimonth,ganzhiyear,ganzhiday from litable where id={}'.format(中气[0] + 2)
-    cursor = c.execute(queryString)
-    for row in cursor:
-        後一气 = row
-        #     ={
-        #     "id":int(row[0]),
-        #     "jiqi": row[1],
-        #     "solaryear": int(row[2]),
-        # }
-
-        # cursor = c.execute('select solaryear, solarmonth, solarday, solarhours, ganzhiyear, ganzhimonth from   litable where id={}'.format(id))
-        # for row in cursor:
-
-        # solarmonth = int(row[3])
-        # solarday = int(row[4])
-        # solarhours = row[5]
-        # ganzhimonth = row[6][0:2]
-    #     ganzhiyear = row[4][0:2]
-
-    conn.close()
-    timeString = "{0}-{1:02d}-{2:02d} {3}".format(中气[2], 中气[3], 中气[4], 中气[5])
-    中气Time = datetime.datetime.strptime(timeString, "%Y-%m-%d %H:%M:%S")
-
-    timeString = "{0}-{1:02d}-{2:02d} {3}".format(前一节[2], 前一节[3], 前一节[4], 前一节[5])
-    前一节Time = datetime.datetime.strptime(timeString, "%Y-%m-%d %H:%M:%S")
-
-    timeString = "{0}-{1:02d}-{2:02d} {3}".format(前一气[2], 前一气[3], 前一气[4], 前一气[5])
-    前一气Time = datetime.datetime.strptime(timeString, "%Y-%m-%d %H:%M:%S")
-
-    timeString = "{0}-{1:02d}-{2:02d} {3}".format(後一节[2], 後一节[3], 後一节[4], 後一节[5])
-    後一节Time = datetime.datetime.strptime(timeString, "%Y-%m-%d %H:%M:%S")
-
-    timeString = "{0}-{1:02d}-{2:02d} {3}".format(後一气[2], 後一气[3], 後一气[4], 後一气[5])
-    後一气Time = datetime.datetime.strptime(timeString, "%Y-%m-%d %H:%M:%S")
-
     timeString = "{0}-{1:02d}-{2:02d} {3:02d}:{4:02d}:{5:02d}".format(
         y, m, d, h, minu, sec)
+
     占时Time = datetime.datetime.strptime(timeString, "%Y-%m-%d %H:%M:%S")
-    中气月支=支(中气[6][1:2])
+    前一节Time = None
+    前一节Num = None
+    后一节Time = None
+    后一节Num = None
+    c = eacal.EACal(zh_s=True)
+    for x in c.get_annual_solar_terms(y):
+        if x[1] % 2 == 0:
+            前一节Time = 后一节Time
+            后一节Time = x[2].replace(tzinfo=None)
+            前一节Num = 后一节Num
+            后一节Num = x[1]
+        if 前一节Time is not None and 后一节Time is not None:
+            if 占时Time >= 前一节Time and 占时Time <= 后一节Time:
+                break
+    气List = c.get_specified_solar_term(y, 前一节Num + 1)
+    气Time = 气List[2].replace(tzinfo=None)
+
+    气 = "{} {}".format(气List[0],
+                       datetime.datetime.strftime(气List[2],
+                                                  "%Y-%m-%d %H:%M:%S"))
+#     气 = "{} {}".format(气List[0], 气List[2].replace(tzinfo=None))
+    节 = c.get_specified_solar_term(y, 前一节Num)[0]
+    节 = "{} {}".format(节, datetime.datetime.strftime(前一节Time,
+                                                     "%Y-%m-%d %H:%M:%S"))
+
+    __年干支, __月干支, __日干支 = c.get_cycle_ymd(datetime.datetime(y, m, d))
+    年柱 = 干支(干(__年干支[0]), 支(__年干支[1]))
+    月柱 = 干支(干(__月干支[0]), 支(__月干支[1]))
+    日柱 = 干支(干(__日干支[0]), 支(__日干支[1]))
+
     for i in ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"]:
-        if 中气月支.六合(支(i)):
+        if 月柱.支.六合(支(i)):
             月将=支(i)
             break
-
-    if 占时Time >= 後一气Time:
-        月将=月将-1
-        年柱=干支(干(後一气[7][0:1]), 支(後一气[7][1:2]))
-        月柱=干支(干(後一气[6][0:1]), 支(後一气[6][1:2]))
-        # 日柱=干支(干(後一气[8][0:1]),支(後一气[8][1:2])) + (占时Time-後一气Time).days
-
-        节 = "{} {}".format(後一节[1], 後一节Time)
-        气 = "{} {}".format(後一气[1], 後一气Time)
-
-    if 占时Time >= 中气Time:
-        # 月将 = 月将 - 1
-        if 占时Time >= 後一节Time:
-            年柱 = 干支(干(後一节[7][0:1]), 支(後一节[7][1:2]))
-            月柱 = 干支(干(後一节[6][0:1]), 支(後一节[6][1:2]))
-
-            # 日柱 = 干支(干(後一节[8][0:1]), 支(後一节[8][1:2])) + (占时Time - 後一节Time).days
-            节 = "{} {}".format(後一节[1], 後一节Time)
-            气 = "{} {}".format(後一气[1], 後一气Time)
-        else:
-            年柱 = 干支(干(中气[7][0:1]), 支(中气[7][1:2]))
-            月柱 = 干支(干(中气[6][0:1]), 支(中气[6][1:2]))
-            # 日柱 = 干支(干(中气[8][0:1]), 支(中气[8][1:2])) + (占时Time - 中气Time).days
-            节 = "{} {}".format(前一节[1], 前一节Time)
-            气 = "{} {}".format(中气[1], 中气Time)
-
-    if 占时Time < 中气Time and 占时Time >= 前一节Time:
-        月将 = 月将 + 1
-        年柱 = 干支(干(中气[7][0:1]), 支(中气[7][1:2]))
-        月柱 = 干支(干(中气[6][0:1]), 支(中气[6][1:2]))
-        # 日柱 = 干支(干(中气[8][0:1]), 支(中气[8][1:2])) + (占时Time - 中气Time).days
-
-        节="{} {}".format(前一节[1], 前一节Time)
-        气="{} {}".format(中气[1], 中气Time)
-
-    if 占时Time < 前一节Time and 占时Time >= 前一气Time:
-        月将 = 月将 + 1
-        年柱 = 干支(干(前一气[7][0:1]), 支(前一气[7][1:2]))
-        月柱 = 干支(干(前一气[6][0:1]), 支(前一气[6][1:2]))
-
-        节="{} {}".format(前一节[1], 前一节Time)
-        气="{} {}".format(前一气[1], 前一气Time)
-
-    if 占时Time < 前一气Time:
-        月将 = 月将 + 2
-        年柱 = 干支(干(前一气[7][0:1]), 支(前一气[7][1:2]))
-        月柱 = 干支(干(前一气[6][0:1]), 支(前一气[6][1:2]))
-
-        节="{} {}".format(前一节[1], 前一节Time)
-        气="{} {}".format(前一气[1], 前一气Time)
-
-    if 占时Time.time() >= datetime.time(23, 0):
-        占时Time = 占时Time+datetime.timedelta(hours=1)
-
-    # 日柱 = 干支(干(中气[8][0:1]), 支(中气[8][1:2])) + (占时Time - 中气Time).days
-    日柱 = 干支(干(中气[8][0:1]), 支(中气[8][1:2])) + (datetime.datetime(占时Time.year, 占时Time.month, 占时Time.day)-datetime.datetime(中气Time.year, 中气Time.month, 中气Time.day)).days
+    if 占时Time < 气Time:
+        月将=月将 + 1
+ 
     时辰 = GetShiChen(h)
     if 日柱.干 == 干("甲") or 日柱.干 == 干("己"):
         子时天干 = 干("甲")
@@ -156,12 +74,54 @@ def GetLi(y, m, d, h, minu, sec):
     if 日柱.干 == 干("戊") or 日柱.干 == 干("癸"):
         子时天干 = 干("壬")
     时柱 = 干支(子时天干 + (时辰 - 支('子')), 时辰)
+    if 时辰 == 支("子"):
+        日柱 = 日柱 + 1
     return [年柱, 月柱, 日柱, 时柱, 月将, 节, 气]
 
 
+class 旺衰():
+    def __init__(self, w):
+        self.ws = ["旺", "相", "休", "囚", "死"]
+        if w not in self.ws:
+            raise ValueError('{} 值错误'.format(w))
+        self.__n = self.ws.index(w)
+
+    @property
+    def num(self):
+        return self.__n
+
+    def __str__(self):
+        return self.ws[self.__n]
+
+    def __eq__(self, other):
+        if not isinstance(other, 旺衰):
+            raise ValueError('{} 不是旺衰'.format(other))
+        return self.num == other.num
+
+
+def Get旺衰(yl, wx):
+    if not isinstance(yl, 支):
+            raise ValueError('{} 不是支'.format(yl))
+    if not isinstance(wx, 五行):
+            raise ValueError('{} 不是五行'.format(yl))
+    if yl.wuxing.生(wx):
+        return 旺衰("相")
+    if yl.wuxing.克(wx):
+        return 旺衰("死")
+    if wx.生(yl.wuxing):
+        return 旺衰("休")
+    if wx.克(yl.wuxing):
+        return 旺衰("囚")
+    return 旺衰("旺")
+
+
 if __name__ == "__main__":
+    w = 五行("水")
+    for i in range(1, 13):
+        z = 支(i)
+        print("{} {} {}".format(w, Get旺衰(z, w), z))
     # for i in range(0,24):
     #     print("{}  {}".format(i,GetShiChen(i)))
-    a=GetLi(2018, 4, 20, 23, 23, 22)
-    for i in a:
-        print(i)
+#     a=GetLi(2018, 8, 13, 23, 23, 22)
+#     for i in a:
+#         print(i)

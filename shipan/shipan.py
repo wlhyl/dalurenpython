@@ -220,7 +220,7 @@ class ShiPan():
                                                         self.空亡[0], self.空亡[1])
         __spHeader = "{} <div>性别：{} 本命：{} 行年：{}</div>".format(
                     __spHeader, "男" if self.性别 == 0 else "女", self.本命, self.行年)
-        __格局 = "<div>卦体: {}</div>".format(" ".join(self.格局))
+        __格局 = "<div><b>卦体:</b> {}</div>".format(" ".join(self.格局))
         __格局comment = ""
         for i in self.格局comment:
             __格局comment = "{}<div>{}</div>".format(__格局comment, i)
@@ -882,6 +882,11 @@ class 天将(Base):
         tmp = 12 if tmp == 0 else tmp
         return 天将(tmp)
 
+    def __eq__(self, other):
+        if not isinstance(other, 天将):
+            raise ValueError('%s 必须是天将' % other)
+        return self.num == other.num
+
 
 class 天将盘():
     zhouGui = {"甲": 支("未"),
@@ -1048,5 +1053,5 @@ class MinGPan(ShiPan):
 
 if __name__ == "__main__":
 #     a = MinGPan(2018, 6, 15,13, 22, 7, "申", "未", True, "abc")
-    a = ShiPan(2018, 6, 15,13, 22, 7, "申", "戌", True, "abc",0,2018)
+    a = ShiPan(2018, 8, 29,13, 22, 7, "巳", "酉", True, "abc",0,2018)
     print(a.toHml)
