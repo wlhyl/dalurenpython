@@ -28,10 +28,31 @@ def do_龙德(sp):
 
 
 def do_三光(sp):
-    pass
+    # 2015-08-12 巳将卯时
+    __月建 = sp.四柱与节气[1].支
+    三传 = sp.三传
+    __初 = 三传.初
+    __中 = 三传.中
+    __末 = 三传.末
+    if Get旺衰(__月建, __初.wuxing) not in [旺衰("旺"), 旺衰("相")]:
+        return
+    sk = sp.四课
+    __干 = sk.干
+    __支 = sk.支
+    if Get旺衰(__月建, __干.wuxing) not in [旺衰("旺"), 旺衰("相")]:
+        return
+    if Get旺衰(__月建, __支.wuxing) not in [旺衰("旺"), 旺衰("相")]:
+        return
+    tj = sp.tianJiang
+    c = tj[__初]
+    z = tj[__中]
+    m = tj[__末]
+    if c.吉将 or z.吉将 or m.吉将:
+        sp.setGuaTi("三光卦")
 
 
 def do_三阳(sp):
+    # 2018-04-03 戌将 酉时
     __发用 = sp.三传.初
     __月建 = sp.四柱与节气[1].支
     if Get旺衰(__月建, __发用.wuxing) not in [旺衰("旺"), 旺衰("相")]:

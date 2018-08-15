@@ -875,6 +875,10 @@ class 天将(Base):
             raise ValueError('输入的值为%s，输入值必是大于等于1小于等于12间的整数' % num)
         super().__init__(n)
 
+    @property
+    def 吉将(self):
+        return self.num in [1, 4, 6, 9, 11, 12]
+
     def __add__(self, other):
         if not isinstance(other, int):
             raise ValueError('%s 必须是整数' % other)
