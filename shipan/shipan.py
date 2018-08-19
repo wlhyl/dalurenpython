@@ -263,9 +263,9 @@ class ShiPan():
     def __年命(self):
         本命 = GetLi(self.生年, 5, 20, 12, 0, 0)[0]
         if self.性别 == 0:
-            行年 = 干支(干("丙"),支("寅")) + (self.year - self.生年)
+            行年 = 干支(干("丙"), 支("寅")) + (self.year - self.生年)
         else:
-            行年 = 干支(干("壬"),支("申")) + (self.生年 - self.year)
+            行年 = 干支(干("壬"), 支("申")) + (self.生年 - self.year)
         return 本命, 行年
 
 

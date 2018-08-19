@@ -7,6 +7,7 @@ from shipan.shipan import ShiPan, MinGPan
 
 from common import GetShiChen, GetLi, DiZHiList
 from help import HelpDialog
+from shensha.ShenShaDialog import ShenShaDialog
 
 
 def checkValue(func):
@@ -48,6 +49,7 @@ def checkValue(func):
 class DaLuRenWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
+        self.shiPan = None
         self.setWindowTitle("大六壬")
 
         # Create mainold layout
@@ -102,6 +104,9 @@ class DaLuRenWindow(QtWidgets.QMainWindow):
         self.secondInput.setValidator(QtGui.QIntValidator(0, 59,
                                                           self.minutesInput))
         rightVBoxLayout.addWidget(self.secondInput)
+
+        timeNowButton = QtWidgets.QPushButton("当前时间")
+        rightVBoxLayout.addWidget(timeNowButton)
 
         self.yueJiang = QtWidgets.QComboBox()
         self.yueJiang.addItems(DiZHiList)
@@ -160,17 +165,8 @@ class DaLuRenWindow(QtWidgets.QMainWindow):
         rightVBoxLayout.addStretch()
 
         # 设置默认时间
-        nowDateTime = datetime.datetime.today()
-        self.yearInput.setText("{}".format(nowDateTime.year))
-        self.monthInput.setText("{}".format(nowDateTime.month))
-        self.dayInput.setText("{}".format(nowDateTime.day))
-        self.hourInput.setText("{}".format(nowDateTime.hour))
-        self.minutesInput.setText("{}".format(nowDateTime.minute))
-        self.secondInput.setText("{}".format(nowDateTime.second))
-        self.shengNianInput.setText("{}".format(nowDateTime.year))
+        self.timeNow()
 
-        self.zhanShi.setCurrentIndex(GetShiChen(int(self.hourInput.text())).num
-                                     - 1)
         月将 = GetLi(int(self.yearInput.text()), int(self.monthInput.text()),
                    int(self.dayInput.text()), int(self.hourInput.text()),
                    int(self.minutesInput.text()),
@@ -179,6 +175,8 @@ class DaLuRenWindow(QtWidgets.QMainWindow):
         button.clicked.connect(self.onclick)
         helpButton.clicked.connect(self.helpOnclick)
         yueJiangbutton.clicked.connect(self.yueJiangOnClick)
+        shenShaButton.clicked.connect(self.shenShaOnclick)
+        timeNowButton.clicked.connect(self.timeNowOnClick)
 #         self.show()
 
     # Connect event for button
@@ -208,6 +206,7 @@ class DaLuRenWindow(QtWidgets.QMainWindow):
             s = ShiPan(year, month, day, hour, minutes, second, 月将, 占时, 昼占,
                        __占测的事, 性别, shengNian)
         self.textBrowser.setHtml(s.toHml)
+        self.shiPan = s
 
     @checkValue
     def yueJiangOnClick(self):
@@ -219,6 +218,8 @@ class DaLuRenWindow(QtWidgets.QMainWindow):
         second = int("0{}".format(self.secondInput.text()))
         __月将 = GetLi(year, month, day, hour, minutes, second)[4]
         self.yueJiang.setCurrentIndex(__月将.num - 1)
+        __占时 = GetShiChen(int(self.hourInput.text()))
+        self.zhanShi.setCurrentIndex(__占时.num - 1)
 
     def helpOnclick(self):
         # return
@@ -226,3 +227,25 @@ class DaLuRenWindow(QtWidgets.QMainWindow):
         # helpDialog.setWindowTitle("帮助")
         # helpDialog.exec_()
         helpDialog.show()
+
+    def shenShaOnclick(self):
+        # return
+        shenShaDialog = ShenShaDialog(self, self.shiPan)
+        shenShaDialog.show()
+
+    def timeNowOnClick(self):
+        self.timeNow()
+
+    def timeNow(self):
+        nowDateTime = datetime.datetime.today()
+        self.yearInput.setText("{}".format(nowDateTime.year))
+        self.monthInput.setText("{}".format(nowDateTime.month))
+        self.dayInput.setText("{}".format(nowDateTime.day))
+        self.hourInput.setText("{}".format(nowDateTime.hour))
+        self.minutesInput.setText("{}".format(nowDateTime.minute))
+        self.secondInput.setText("{}".format(nowDateTime.second))
+        self.shengNianInput.setText("{}".format(nowDateTime.year))
+        __占时 = GetShiChen(nowDateTime.hour)
+#         self.zhanShi.setCurrentIndex(GetShiChen(int(self.hourInput.text())).num
+#                              - 1)
+        self.zhanShi.setCurrentIndex(__占时.num - 1)
