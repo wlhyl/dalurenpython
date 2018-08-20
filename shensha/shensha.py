@@ -181,7 +181,7 @@ def do_病符(sp, shenShaJson):
 
 def do_血支血忌(sp, shenShaJson):
     __月建 = sp.四柱与节气[1].支
-    shenShaJson["年"]["血支"] = __月建 + (-1)
+    shenShaJson["月"]["血支"] = __月建 + (-1)
     if (__月建 - 支("寅")) % 2 == 0:
         shenShaJson["月"]["血忌"] = 支("丑") + (__月建 - 支("寅")) // 2
     else:
