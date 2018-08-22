@@ -142,7 +142,7 @@ def do_伏殃(sp):
     sc = sp.三传
     sk = sp.四课
     tp = sp.天盘
-    __chu = sc.末
+    __chu = sc.初
     __行年上神 = tp[sp.行年.支]
     __本命上神 = tp[sp.本命.支]
 
@@ -150,7 +150,6 @@ def do_伏殃(sp):
     __支上神 = sk.支阳神
 
     zhiList = [__干上神, __支上神, __chu, __行年上神, __本命上神]
-
     if __天鬼 in zhiList:
         sp.setGuaTi("伏殃卦")
 

@@ -65,7 +65,14 @@ class DaLuRenWindow(QtWidgets.QMainWindow):
         # 设置右则面板
         rightWidget = QtWidgets.QWidget()
         rightWidget.setFixedWidth(100)
-        layout.addWidget(rightWidget)
+#         layout.addWidget(rightWidget)
+        scrollArea = QtWidgets.QScrollArea(self)
+        scrollArea.setFixedWidth(120)
+        scrollArea.setWidgetResizable(True)
+
+#         scroll_bar = scrollArea.verticalScrollBar()
+        scrollArea.setWidget(rightWidget)
+        layout.addWidget(scrollArea)
 
         # 为右则面板使用水平布局
         rightVBoxLayout = QtWidgets.QVBoxLayout()
