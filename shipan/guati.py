@@ -31,10 +31,10 @@ def do_龙德(sp):
 def do_三光(sp):
     # 2015-08-12 巳将卯时
     __月建 = sp.四柱与节气[1].支
-    三传 = sp.三传
-    __初 = 三传.初
-    __中 = 三传.中
-    __末 = 三传.末
+    __三传 = sp.三传
+    __初 = __三传.初
+    __中 = __三传.中
+    __末 = __三传.末
     if Get旺衰(__月建, __初.wuxing) not in [旺衰("旺"), 旺衰("相")]:
         return
     sk = sp.四课
@@ -58,14 +58,14 @@ def do_三阳(sp):
     __月建 = sp.四柱与节气[1].支
     if Get旺衰(__月建, __发用.wuxing) not in [旺衰("旺"), 旺衰("相")]:
         return
-    天将盘 = sp.tianJiang
-    if 天将盘.逆:
+    __天将盘 = sp.tianJiang
+    if __天将盘.逆:
         return
     sk = sp.四课
     __干 = sk.干
     __支 = sk.支
-    __干天将 = 天将盘[shipan.寄宫(__干)]
-    __支天将 = 天将盘[__支]
+    __干天将 = __天将盘[shipan.寄宫(__干)]
+    __支天将 = __天将盘[__支]
     t = [shipan.天将('蛇'), shipan.天将('雀'), shipan.天将('合'), shipan.天将('勾'),
          shipan.天将('龙')]
     if __干天将 in t and __支天将 in t:
@@ -75,35 +75,33 @@ def do_三阳(sp):
 def do_三奇(sp):
     __kw = sp.空亡
     __xs = __kw[1] + 1
+    __旬奇 = ""
     if __xs in [支("戌"), 支("子")]:
-        旬奇 = 支("丑")
+        __旬奇 = 支("丑")
     if __xs in [支("申"), 支("午")]:
-        旬奇 = 支("子")
+        __旬奇 = 支("子")
     if __xs in [支("寅"), 支("辰")]:
-        旬奇 = 支("亥")
+        __旬奇 = 支("亥")
 
-    三传 = sp.三传
-    __初 = 三传.初
-    __中 = 三传.中
-    __末 = 三传.末
-    sc = [三传.初, 三传.中, 三传.末]
-    if 旬奇 in sc:
+    __sc = sp.三传
+    sc = [__sc.初, __sc.中, __sc.末]
+    if __旬奇 in sc:
         sp.setGuaTi("三奇卦")
 
 
 def do_六仪(sp):
     __kw = sp.空亡
     __xs = __kw[1] + 1
-    三传 = sp.三传
-    sc = [三传.初, 三传.中, 三传.末]
+    sc = sp.三传
+    sc = [sc.初, sc.中, sc.末]
     if __xs in sc:
         sp.setGuaTi("六仪卦")
         return
 
 
 def do_铸印(sp):
-    三传 = sp.三传
-    sc = [三传.初, 三传.中, 三传.末]
+    __三传 = sp.三传
+    sc = [__三传.初, __三传.中, __三传.末]
     tp = sp.天盘
     si = 支("巳")
     xu = 支("戌")
@@ -134,7 +132,7 @@ def do_斫轮(sp):
 def do_伏殃(sp):
     __月建 = sp.四柱与节气[1].支
     zhi = __月建
-    while ((zhi - 支("寅")) % 3 != 0):
+    while (zhi - 支("寅")) % 3 != 0:
         zhi = zhi + 4
     __天鬼 = zhi + 7
     sc = sp.三传
@@ -196,10 +194,10 @@ def do_罗网(sp):
     __支上神 = sk.支阳神
 
     zhiList = [__干上神, __支上神, __chu, __行年上神, __本命上神]
-    天罗 = shipan.寄宫(sk.干) + 1
-    地网 = 天罗 + 6
+    __天罗 = shipan.寄宫(sk.干) + 1
+    __地网 = __天罗 + 6
 
-    if 天罗 in zhiList or 地网 in zhiList:
+    if __天罗 in zhiList or __地网 in zhiList:
         sp.setGuaTi("罗网卦")
 
 
