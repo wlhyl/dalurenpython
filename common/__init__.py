@@ -61,7 +61,7 @@ def GetLi(y, m, d, h, minu, sec):
             break
     if 占时Time < 气Time:
         月将=月将 + 1
- 
+
     时辰 = GetShiChen(h)
     if 日柱.干 == 干("甲") or 日柱.干 == 干("己"):
         子时天干 = 干("甲")

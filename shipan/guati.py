@@ -1,6 +1,6 @@
 from shipan import shipan
 from common import Get旺衰, 旺衰
-from ganzhiwuxin import *
+from ganzhiwuxin import 干, 支
 
 
 def do_伏呤(sp):
@@ -134,11 +134,9 @@ def do_斫轮(sp):
 def do_伏殃(sp):
     __月建 = sp.四柱与节气[1].支
     zhi = __月建
-    for i in range(0, 3):
-        if zhi in [支("寅"), 支("巳"), 支("申"), 支("亥")]:
-            __天鬼 = zhi + 7
-            break
+    while ((zhi - 支("寅")) % 3 != 0):
         zhi = zhi + 4
+    __天鬼 = zhi + 7
     sc = sp.三传
     sk = sp.四课
     tp = sp.天盘
@@ -256,8 +254,3 @@ def do_连茹(sp):
 
 def do_侵害(sp):
     pass
-
-
-
-if __name__ == "__main__":
-    shipan.ShiPan(2018, 4, 3, 11, 11,11, "戌","酉",yes, "占测的事")
