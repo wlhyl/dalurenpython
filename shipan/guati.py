@@ -129,6 +129,18 @@ def do_斫轮(sp):
         sp.setGuaTi("斫轮卦")
 
 
+def do_轩盖(sp):
+    __sc = sp.三传
+    sc = [__sc.初, __sc.中, __sc.末]
+    yin = 支("寅")
+    zi = 支("子")
+    mao = 支("卯")
+    __月建 = sp.四柱与节气[1].支
+    tian_ma = 支("午") + (__月建 - yin) * 2
+    if zi in sc and mao in sc and tian_ma in sc:
+        sp.setGuaTi("轩盖卦")
+
+
 def do_伏殃(sp):
     __月建 = sp.四柱与节气[1].支
     zhi = __月建
@@ -186,7 +198,7 @@ def do_罗网(sp):
     sc = sp.三传
     sk = sp.四课
     tp = sp.天盘
-    __chu = sc.末
+    __chu = sc.初
     __行年上神 = tp[sp.行年.支]
     __本命上神 = tp[sp.本命.支]
 
