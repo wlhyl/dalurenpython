@@ -20,7 +20,7 @@ def checkValue(func):
         minutes = int("0{}".format(self.minutesInput.text()))
         second = int("0{}".format(self.secondInput.text()))
         shengNian = int("0{}".format(self.shengNianInput.text()))
-        if year < 1920 or year > 2100 or \
+        if year < 1 or year > 2100 or \
                 shengNian < 1920 or shengNian > 2100 or \
                 month < 1 or month > 12 or \
                 day < 1 or day > 31 or \

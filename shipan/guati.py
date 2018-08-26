@@ -141,6 +141,29 @@ def do_轩盖(sp):
         sp.setGuaTi("轩盖卦")
 
 
+def do_官爵(sp):
+    __sc = sp.三传
+    sc = [__sc.初, __sc.中, __sc.末]
+    __戌 = 支("戌")
+    if __戌 not in sc:
+        return
+    tjp = sp.tianJiang
+    __太常支 = tjp.临(shipan.天将("常"))
+    if __太常支 not in sc:
+        return
+
+    zhiList = [sp.四柱与节气[0].支, sp.四柱与节气[1].支, sp.四课.支,
+               sp.行年.支, sp.本命.支]
+    for i in zhiList:
+        zhi = i
+        while (zhi - 支("寅")) % 3 != 0:
+            zhi = zhi + 4
+        yiMa = zhi + 6
+        if yiMa in sc:
+            sp.setGuaTi("官爵卦")
+            return
+
+
 def do_伏殃(sp):
     __月建 = sp.四柱与节气[1].支
     zhi = __月建

@@ -1,5 +1,4 @@
 from ganzhiwuxin import 干, 支
-import shensha
 
 
 def do_驿马(sp, shenShaJson):
@@ -21,6 +20,15 @@ def do_驿马(sp, shenShaJson):
             break
         zhi = zhi + 4
     shenShaJson["日"]["驿马"] = yiMa
+
+    __岁 = sp.四柱与节气[0].支
+    zhi = __岁
+    for i in range(0, 3):
+        if zhi in [支("寅"), 支("巳"), 支("申"), 支("亥")]:
+            yi_ma = zhi + 6
+            break
+        zhi = zhi + 4
+    shenShaJson["年"]["驿马"] = yi_ma
 
 
 def do_月合(sp, shenShaJson):

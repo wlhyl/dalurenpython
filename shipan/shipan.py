@@ -886,6 +886,11 @@ class 天将(Base):
         tmp = 12 if tmp == 0 else tmp
         return 天将(tmp)
 
+    def __sub__(self, other):
+        if not isinstance(other, 天将):
+            raise ValueError('%s 必须是天将' % other)
+        return self.num - other.num
+
     def __eq__(self, other):
         if not isinstance(other, 天将):
             raise ValueError('%s 必须是天将' % other)
@@ -951,6 +956,14 @@ class 天将盘():
             return 天将("贵") + (self.__guiren - key)
         else:
             return 天将("贵") + (key - self.__guiren)
+
+    def 临(self, tj):
+        if not isinstance(tj, 天将):
+            raise ValueError('只有天将才有所临地支')
+        if self.逆:
+            return self.__guiren + (天将("贵") - tj)
+        else:
+            return self.__guiren + (tj - 天将("贵"))
 
 
 class MinGPan(ShiPan):
