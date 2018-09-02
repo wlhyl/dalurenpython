@@ -165,7 +165,6 @@ def do_官爵(sp):
 
 
 def do_富贵(sp):
-    # 2018-04-03 戌将 酉时
     __发用 = sp.三传.初
     __月建 = sp.四柱与节气[1].支
     if Get旺衰(__月建, __发用.wuxing) not in [旺衰("旺"), 旺衰("相")]:
@@ -184,6 +183,21 @@ def do_富贵(sp):
     __支上神 = sk.支阳神
     if tianYiZhi in [__行年上神, __本命上神, __干上神, __支上神]:
         sp.setGuaTi("富贵卦")
+
+
+def do_时泰(sp):
+    __太岁 = sp.四柱与节气[0].支
+    __发用 = sp.三传.初
+    if __发用 != __太岁:
+        return
+    __月建 = sp.四柱与节气[1].支
+    tianYiZhi = sp.tianJiang.临(shipan.天将("龙"))
+    if tianYiZhi != __月建:
+        return
+    __sc = sp.三传
+    sc = [__sc.初, __sc.中, __sc.末]
+    if __月建 in sc:
+        sp.setGuaTi("时泰卦")
 
 
 def do_伏殃(sp):
