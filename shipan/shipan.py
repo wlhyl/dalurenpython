@@ -66,7 +66,7 @@ class ShiPan():
             guaTiFuns.append(callback)
         for fun in guaTiFuns:
             fun(self)
-        with open('shipan/guaticomment.json', 'r') as f:
+        with open('shipan/guaticomment.json', 'r', encoding='UTF-8') as f:
             guaTiCommentJson = json.load(f)
         if "虎视" in self.格局 or "冬蛇掩目" in self.格局:
             self.格局.append("虎视卦")
