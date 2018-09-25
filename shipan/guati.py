@@ -200,6 +200,19 @@ def do_时泰(sp):
         sp.setGuaTi("时泰卦")
 
 
+def do_九丑(sp):
+    sk = sp.四课
+    gan =  sk.干
+    zhi = sk.支
+    if gan not in [干("乙"), 干("戊"), 干("己"), 干("辛"), 干("壬"),]:
+        return
+    if zhi not in [支("子"), 支("卯"), 支("午"), 支("酉")]:
+        return
+    __支上神 = sk.支阳神
+    if __支上神 != 支("丑"):
+        return
+    sp.setGuaTi("九丑卦")
+
 def do_伏殃(sp):
     __月建 = sp.四柱与节气[1].支
     zhi = __月建

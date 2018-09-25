@@ -9,5 +9,5 @@ for k in range(0, 50):
     for i in range(0, 12):
         __月将 = GetLi(t0.year, t0.month, t0.day, t0.hour, t0.minute, t0.second)[4]
         a = ShiPan(t0.year, t0.month, t0.day,20, 22, 7, str(__月将), str(支("子") + i), True, "abc",0,2018)
-        if "时泰卦" in a.格局:
+        if "九丑卦" in a.格局:
             print("{} {}".format(t0, str(支("子") + i)))

@@ -209,15 +209,17 @@ def do_丧车(sp, shenShaJson):
 
 
 def do_游都(sp, shenShaJson):
-    pass
+    # TODO
+    return
 
 
 def do_奸神(sp, shenShaJson):
-    pass
-
+# TODO
+    return
 
 def do_奸私(sp, shenShaJson):
-    pass
+# TODO
+    return
 
 
 def do_信神天鸡(sp, shenShaJson):
@@ -249,8 +251,21 @@ def do_天鬼(sp, shenShaJson):
 
 
 def do_桃花绳索(sp, shenShaJson):
+    # TODO
     return
 
+def do_大时(sp, shenShaJson):
+    __月建 = sp.四柱与节气[1].支
+    zhi = __月建
+    for i in range(0, 3):
+        if zhi in [支("子"), 支("卯"), 支("午"), 支("酉")]:
+            __大时 = zhi +(-3)
+            break
+        zhi = zhi + 4
+    shenShaJson["月"]["大时"] = __大时
+
+def do_小时(sp, shenShaJson):
+    shenShaJson["月"]["小时"] = sp.四柱与节气[1].支
 
 def do__旬奇(sp, shenShaJson):
     __kw = sp.空亡
