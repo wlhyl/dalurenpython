@@ -4,6 +4,7 @@ from prettytable import PrettyTable
 from ganzhiwuxin import *
 from common import GetLi
 from shipan import guati
+from common.moonMansions import getMoonMansion
 
 
 class NoSanchuan(Exception):
@@ -50,6 +51,7 @@ class ShiPan():
         self.性别 = 性别
         self.生年 = 生年
         self.四柱与节气 = GetLi(year, month, day, hour, minutes, second)
+        self.moonMansion = getMoonMansion(year, month, day, hour, minutes, second)
         self.占日 = self.四柱与节气[2]
         self.空亡 = self.__空亡
         self.tp = TianPan(self.yueJiang, self.zhanShi)
@@ -211,13 +213,14 @@ class ShiPan():
         __昼占 = "夜占"
         if self.昼占:
             __昼占 = "昼占"
-        __spHeader = ("{}<div>月将：{}&nbsp&nbsp&nbsp占时：{}&nbsp{}&nbsp&nbsp&nbsp"
+        __spHeader = ("{}<div>月将：{}&nbsp&nbsp&nbsp月宿：{}&nbsp&nbsp&nbsp占时：{}&nbsp{}&nbsp&nbsp&nbsp"
                       "(空亡: {} {})</div>").format(
-                                                        __spHeader,
-                                                        self.yueJiang,
-                                                        self.zhanShi,
-                                                        __昼占,
-                                                        self.空亡[0], self.空亡[1])
+            __spHeader,
+            self.yueJiang,
+            self.moonMansion,
+            self.zhanShi,
+            __昼占,
+            self.空亡[0], self.空亡[1])
         __spHeader = "{} <div>性别：{} 本命：{} 行年：{}</div>".format(
                     __spHeader, "男" if self.性别 == 0 else "女", self.本命, self.行年)
         __格局 = "<div><b>卦体:</b> {}</div>".format(" ".join(self.格局))
