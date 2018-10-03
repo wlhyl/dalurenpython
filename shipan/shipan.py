@@ -68,20 +68,20 @@ class ShiPan():
             guaTiFuns.append(callback)
         for fun in guaTiFuns:
             fun(self)
-        with open('shipan/guaticomment.json', 'r', encoding='UTF-8') as f:
-            guaTiCommentJson = json.load(f)
+        # with open('shipan/guaticomment.json', 'r', encoding='UTF-8') as f:
+        #     guaTiCommentJson = json.load(f)
         if "虎视" in self.格局 or "冬蛇掩目" in self.格局:
             self.格局.append("虎视卦")
         if "见机" in self.格局 or "察微" in self.格局 or "复等" in self.格局:
             self.格局.append("涉害卦")
-        for i in self.格局:
-            __g = ("<div>"
-                   "<font style=font-weight:bold;>{}：</font>"
-                   "<div>{}</div></div>")
-            __gc = guaTiCommentJson.get(i)
-            if __gc is None:
-                continue
-            self.格局comment.append(__g.format(i, __gc))
+        # for i in self.格局:
+        #     __g = ("<div>"
+        #            "<font style=font-weight:bold;>{}：</font>"
+        #            "<div>{}</div></div>")
+        #     __gc = guaTiCommentJson.get(i)
+        #     if __gc is None:
+        #         continue
+        #     self.格局comment.append(__g.format(i, __gc))
 
     @property
     def table(self):

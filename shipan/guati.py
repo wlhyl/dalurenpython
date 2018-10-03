@@ -9,6 +9,7 @@ def do_伏呤(sp):
     __支阳 = sk.支阳神
     if __支 == __支阳:
         sp.setGuaTi("伏呤卦")
+        # TODO
 
 
 def do_返呤(sp):
@@ -212,6 +213,22 @@ def do_九丑(sp):
     if __支上神 != 支("丑"):
         return
     sp.setGuaTi("九丑卦")
+
+
+def do_二烦(sp):
+    sunMansion = sp.yueJiang
+    moonMansion = sp. moonMansion
+    tp = sp.tp
+    sunLing = tp.临(sunMansion)
+    moonLing = tp.临(moonMansion)
+
+    if sunLing not in [支("子"), 支("卯"), 支("午"), 支("酉")]:
+        return
+
+    if moonLing not in [支("子"), 支("卯"), 支("午"), 支("酉")]:
+        return
+    sp.setGuaTi("二烦卦")
+
 
 def do_伏殃(sp):
     __月建 = sp.四柱与节气[1].支
