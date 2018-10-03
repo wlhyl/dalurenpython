@@ -1,6 +1,9 @@
+import datetime
+import eacal
 from shipan import shipan
 from common import Get旺衰, 旺衰
-from ganzhiwuxin import 干, 支
+from ganzhiwuxin import 干, 支, 干支
+from common import GetLi
 
 
 def do_伏呤(sp):
@@ -228,6 +231,29 @@ def do_二烦(sp):
     if moonLing not in [支("子"), 支("卯"), 支("午"), 支("酉")]:
         return
     sp.setGuaTi("二烦卦")
+
+
+def do_天祸(sp):
+    year = sp.year
+    zhanRi = sp.占日
+
+    c = eacal.EACal(zh_s=True)
+    liChun = c.get_specified_solar_term(year, 0)[2].replace(tzinfo=None)
+    liXiao = c.get_specified_solar_term(year, 6)[2].replace(tzinfo=None)
+    liQiu = c.get_specified_solar_term(year, 12)[2].replace(tzinfo=None)
+    liDong = c.get_specified_solar_term(year, 18)[2].replace(tzinfo=None)
+    t = None
+    for i in [liChun, liXiao, liQiu, liDong]:
+        t = GetLi(i.year, i.month, i.day, i.hour, i.minute, i.second)[2]
+        if t == zhanRi:
+            break
+    if t is None:
+        return
+    yesterdayGan = zhanRi + (-1)
+    yesterdayJiGong = shipan.寄宫(yesterdayGan.干)
+    lin = sp.tp.临(shipan.寄宫(zhanRi.干))
+    if yesterdayJiGong == lin:
+        sp.setGuaTi("天祸卦")
 
 
 def do_伏殃(sp):
