@@ -225,12 +225,13 @@ def do_二烦(sp):
     sunLing = tp.临(sunMansion)
     moonLing = tp.临(moonMansion)
 
-    if sunLing not in [支("子"), 支("卯"), 支("午"), 支("酉")]:
-        return
+    if sunLing in [支("子"), 支("卯"), 支("午"), 支("酉")]:
+        sp.setGuaTi("天烦卦")
 
-    if moonLing not in [支("子"), 支("卯"), 支("午"), 支("酉")]:
-        return
-    sp.setGuaTi("二烦卦")
+    if moonLing in [支("子"), 支("卯"), 支("午"), 支("酉")]:
+        sp.setGuaTi("地烦卦")
+    if "天烦卦" in sp.格局 and "地烦卦" in sp.格局:
+        sp.setGuaTi("二烦卦")
 
 
 def do_天祸(sp):
