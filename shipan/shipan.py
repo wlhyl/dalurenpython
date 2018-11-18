@@ -602,7 +602,7 @@ class SanChuan():
                 __初 = i[0]
                 __中 = self.__天盘[__初]
                 __末 = self.__天盘[__中]
-                self.__type.append("见机")
+                self.__type.append("见机卦")
                 return (__初, __中, __末)
 
         # 从仲发用
@@ -612,20 +612,20 @@ class SanChuan():
                 __初 = i[0]
                 __中 = self.__天盘[__初]
                 __末 = self.__天盘[__中]
-                self.__type.append("察微")
+                self.__type.append("察微卦")
                 return (__初, __中, __末)
 
         if self.__四课.干.属阳:
             __初 = self.__四课.干阳神
             __中 = self.__天盘[__初]
             __末 = self.__天盘[__中]
-            self.__type.append("复等")
+            self.__type.append("复等卦")
             return (__初, __中, __末)
         else:
             __初 = self.__四课.支阳神
             __中 = self.__天盘[__初]
             __末 = self.__天盘[__中]
-            self.__type.append("复等")
+            self.__type.append("复等卦")
             return (__初, __中, __末)
 
         # 俱是季
@@ -684,7 +684,7 @@ class SanChuan():
             chu = self.__天盘[支("酉")]
             zhong = self.__四课.支阳神
             mo = self.__四课.干阳神
-            self.__type.append("虎视")
+            self.__type.append("虎视卦")
             return (chu, zhong, mo)
         else:
             chu = self.__天盘.临(支("酉"))
@@ -973,7 +973,7 @@ class MinGPan(ShiPan):
     def __init__(self, year, month, day, hour, minutes,
                  second, 月将, 占时, 昼占=True, 占测的事="", 性别=0, 生年=2018):
         super().__init__(year, month, day, hour, minutes,
-                         second, 月将, 占时, 昼占, 占测的事, 性别=0, 生年=2018)
+                         second, 月将, 占时, 昼占, 占测的事, 性别=0, 生年=生年)
         self.命宫 = self.四柱与节气[0].支
         self.三限 = self.__三限
         self.大运流年 = self.__大运流年()
